@@ -1,4 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
+const { NOT_FOUND, BAD_REQUEST, DEFAULT} = require("../utils/errors");
+
 
 const createItem = (req, res) => {
   console.log(req);
@@ -15,18 +17,18 @@ const createItem = (req, res) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ err: err.message });
       }
-      // res.status(400).send({ message: "Error from  createItem", e });
+      res.status(DEFAULT).send({ message: "Error from  createItem", e });
     });
 };
 
 const getItems = (req, res) => {
   const {itemId} = req.params;
-  
+
   console.log(itemId)
   ClothingItem.findById({})
     .then((items) => res.status(200).send(items))
-    .catch((e) => {
-      res.status(500).send({ message: "Get items failed", e });
+    .catch((error) => {
+      res.status(500).send({ message: "Get items failed"});
     });
 };
 
@@ -51,10 +53,11 @@ const deleteItem = (req, res) => {
     )
     .catch((e) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(400).send({ err: err.message });
+        return res.status(NOT_FOUND).send({ err: err.message });
       } else if (err.name === 'CastError') {
-        return res.status(404).send({ err: err.message });
+        return res.status(BAD_REQUEST).send({ err: err.message });
      }
+     res.status(500).send({ message: "Error from  createItem",  })
     });
 };
 
@@ -64,7 +67,10 @@ const likeItem = (req, res) => {
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  )
+  ).then((items) => res.status(200).send(items))
+  .catch((error) => {
+    res.status(DEFAULT).send({ message: "Get items failed"});
+  });
 };
 
 const deleteLike = (req,res) => {
@@ -72,7 +78,10 @@ const deleteLike = (req,res) => {
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  )
+  ).then((items) => res.status(200).send(items))
+  .catch((error) => {
+    res.status(DEFAULT).send({ message: "Get items failed"});
+  });
 }
 
 module.exports = { createItem, getItems, likeItem, deleteLike, deleteItem };
