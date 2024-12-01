@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const error = require(BAD_REQUEST, NOT_FOUND, DEFAULT);
 
 //GET /users
 
@@ -7,7 +8,7 @@ const getUsers = (req, res) => {
     .then((users) => res.status(200).send(users))
     .catch((error) => {
       console.error(err);
-      return res.status(500).send({ err: err.message });
+      return res.status(500).send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -19,9 +20,9 @@ const createUser = (req, res) => {
     .catch((error) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ err: err.message });
+        return res.status(400).send({ message: "An error has occurred on the server" });
       }
-      return res.status(500).send({ err: err.message });
+      return res.status(500).send({ message: "An error has occurred on the server" });
     });
 };
 

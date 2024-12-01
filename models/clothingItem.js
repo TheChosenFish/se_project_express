@@ -1,17 +1,43 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { link } = require("../routes");
 
 const clothingItemSchema = new mongoose.Schema({
   name: {
     type: "String",
     required: true,
+    minimum: 2,
+    maximum: 20,
   },
   weather: {
-    type: "String",
+    type: ("hot", "warm", "cold"),
     required: true,
   },
-  imageURL: {
+  imageUrl: {
     type: "String",
+    required: true,
+    validate: {
+      validator: (v) => validator.isURL(v),
+      message: "Link is not valid",
+    },
+  },
+  owner: {
+    type: "String",
+    required: true,
+    ObjectId: "",
+
+  },
+  likes: {
+    type: "String",
+    required: true,
+    ObjectId: user.ObjectId({}),
+    validate: {
+      validator: (v) => validator.isURL(v),
+      message: "Link is not valid",
+    },
+  },
+  createdAt: {
+    type: Date,
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
