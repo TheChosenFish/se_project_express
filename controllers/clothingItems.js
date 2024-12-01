@@ -27,7 +27,7 @@ const getItems = (req, res) => {
   ClothingItem.findById({})
     .then((items) => res.status(200).send(items))
     .catch((error) => {
-      res.status(DEFAULT).send({ message: "Get items failed" });
+      res.status(DEFAULT).send({ error });
     });
 };
 
@@ -48,7 +48,7 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete()
     .orFail()
     .then((item) =>
-      res.status(200).send({ message: "clothing item delete error" })
+      res.status(200).send({ item })
     )
     .catch((error) => {
       if (err.name === "DocumentNotFoundError") {

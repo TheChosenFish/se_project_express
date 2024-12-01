@@ -14,7 +14,7 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, body } = req.body;
+  const { name, avatar } = req.body;
 
   User.create({ name, avatar })
     .then((user) => res.status(201).send(user))
