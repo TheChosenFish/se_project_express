@@ -1,6 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { NOT_FOUND, BAD_REQUEST, DEFAULT} = require("../utils/errors");
-
+const { NOT_FOUND, BAD_REQUEST, DEFAULT } = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req);
@@ -15,20 +14,20 @@ const createItem = (req, res) => {
     })
     .catch((error) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ err: err.message });
+        return res.status(DEFAULT).send({ error });
       }
-      res.status(DEFAULT).send({ message: "Error from  createItem", e });
+      res.status(DEFAULT).send({ message: "Error from  createItem" });
     });
 };
 
 const getItems = (req, res) => {
-  const {itemId} = req.params;
+  const { itemId } = req.params;
 
-  console.log(itemId)
+  console.log(itemId);
   ClothingItem.findById({})
     .then((items) => res.status(200).send(items))
     .catch((error) => {
-      res.status(500).send({ message: "Get items failed"});
+      res.status(DEFAULT).send({ message: "Get items failed" });
     });
 };
 
@@ -51,37 +50,48 @@ const deleteItem = (req, res) => {
     .then((item) =>
       res.status(200).send({ message: "clothing item delete error" })
     )
-    .catch((e) => {
+    .catch((error) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ err: err.message });
-      } else if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ err: err.message });
-     }
-     res.status(500).send({ message: "Error from  createItem",  })
+        return res.status(NOT_FOUND).send({ error });
+      } else if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ error });
+      }
+      res.status(DEFAULT).send({ message: "Error from  createItem" });
     });
 };
-
 
 const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
-  ).then((items) => res.status(200).send(items))
-  .catch((error) => {
-    res.status(DEFAULT).send({ message: "Get items failed"});
-  });
+    { new: true }
+  )
+    .orFail()
+    .then((items) => res.status(200).send(items))
+    .catch((error) => {
+      if (NOT_FOUND === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ error });
+      }
+      res.status(DEFAULT).send({ message: "Get items failed" });
+    });
 };
 
-const deleteLike = (req,res) => {
+const deleteLike = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
-    { new: true },
-  ).then((items) => res.status(200).send(items))
-  .catch((error) => {
-    res.status(DEFAULT).send({ message: "Get items failed"});
-  });
-}
+    { new: true }
+  )
+    .orFail()
+    .then((items) => res.status(200).send(items))
+    .catch((error) => {
+      if (NOT_FOUND === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ error });
+      } else if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ error });
+      }
+      res.status(DEFAULT).send({ message: "Get items failed" });
+    });
+};
 
 module.exports = { createItem, getItems, likeItem, deleteLike, deleteItem };
