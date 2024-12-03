@@ -86,10 +86,10 @@ const deleteLike = (req, res) => {
   )
     .orFail()
     .then((items) => res.status(200).send(items))
-    .catch((error) => {
-      if (error.name === "DocumentNotFoundError") {
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "items not found" });
-      } if (error.name === "CastError") {
+      } if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "items request failed" });
       }
       res.status(DEFAULT).send({ message: "Get items failed" });
