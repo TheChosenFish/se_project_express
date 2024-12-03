@@ -5,16 +5,16 @@ const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
 
-  const { name, weather, imageUrl } = req.body;
+  const { name, weather, imageUrl, owner } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl })
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
     })
     .catch((error) => {
-      if (err.name === "ValidationError") {
-        return res.status(DEFAULT).send({ error });
+      if (error.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({message: "Invalid data" });
       }
       res.status(DEFAULT).send({ message: "Error from  createItem" });
     });
@@ -24,7 +24,7 @@ const getItems = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findById({})
+  ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((error) => {
       res.status(DEFAULT).send({ error });
@@ -45,18 +45,18 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete()
+  ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) =>
       res.status(200).send({ item })
     )
-    .catch((error) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ error });
-      } else if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ error });
+    .catch((err) => {
+      if (NOT_FOUND === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "item not found" });
+      } if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "item request failed" });
       }
-      res.status(DEFAULT).send({ message: "Error from  createItem" });
+      res.status(DEFAULT).send({ message: "item request error" });
     });
 };
 
@@ -68,9 +68,11 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((items) => res.status(200).send(items))
-    .catch((error) => {
-      if (NOT_FOUND === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ error });
+    .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "items not found"  });
+      } if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "items request failed" });
       }
       res.status(DEFAULT).send({ message: "Get items failed" });
     });
@@ -85,10 +87,10 @@ const deleteLike = (req, res) => {
     .orFail()
     .then((items) => res.status(200).send(items))
     .catch((error) => {
-      if (NOT_FOUND === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ error });
-      } else if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ error });
+      if (error.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "items not found" });
+      } if (error.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "items request failed" });
       }
       res.status(DEFAULT).send({ message: "Get items failed" });
     });
