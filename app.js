@@ -13,7 +13,7 @@ mongoose
   })
   .catch(console.error);
 
-const routes = require("./routes");
+// const routes = require("./routes");
 
 app.use(express.json());
 

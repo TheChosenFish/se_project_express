@@ -5,7 +5,7 @@ const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
 
-  const { name, weather, imageUrl, owner } = req.body;
+  const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
@@ -16,7 +16,7 @@ const createItem = (req, res) => {
       if (error.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({message: "Invalid data" });
       }
-      res.status(DEFAULT).send({ message: "Error from  createItem" });
+      return res.status(DEFAULT).send({ message: "Error from  createItem" });
     });
 };
 
@@ -56,7 +56,7 @@ const deleteItem = (req, res) => {
       } if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "item request failed" });
       }
-      res.status(DEFAULT).send({ message: "item request error" });
+      return res.status(DEFAULT).send({ message: "item request error" });
     });
 };
 
@@ -74,7 +74,7 @@ const likeItem = (req, res) => {
       } if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "items request failed" });
       }
-      res.status(DEFAULT).send({ message: "Get items failed" });
+      return res.status(DEFAULT).send({ message: "Get items failed" });
     });
 };
 
@@ -92,7 +92,7 @@ const deleteLike = (req, res) => {
       } if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "items request failed" });
       }
-      res.status(DEFAULT).send({ message: "Get items failed" });
+      return res.status(DEFAULT).send({ message: "Get items failed" });
     });
 };
 
