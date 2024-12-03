@@ -51,7 +51,7 @@ const deleteItem = (req, res) => {
       res.status(200).send({ item })
     )
     .catch((err) => {
-      if (NOT_FOUND === "DocumentNotFoundError") {
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "item not found" });
       } if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "item request failed" });
