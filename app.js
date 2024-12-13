@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
+const {login, createUser} = require("./controllers/users")
 
 const indexRouter = require("./routes/index");
 
@@ -17,14 +18,20 @@ mongoose
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6749186e162c5ed914a7ac07",
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "6749186e162c5ed914a7ac07",
+//   };
+//   next();
+// });
 
-app.use(express.json());
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+const cors = require("cors");
+
+app.use(cors());
+
 app.use("/", indexRouter);
 
 app.listen(PORT, () => {
