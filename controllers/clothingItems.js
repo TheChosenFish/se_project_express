@@ -7,15 +7,11 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+      res.status(200).send({ data: item });
     })
     .catch((error) => {
       if (error.name === "ValidationError") {
@@ -60,7 +56,7 @@ const deleteItem = (req, res) => {
     })
     .then((items) => res.status(200).send({ items }))
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.code === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "item not found" });
       }
       if (err.name === "CastError") {

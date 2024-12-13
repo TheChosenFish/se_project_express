@@ -22,7 +22,7 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({name: user.name, avatar: user.avatar, email: user.email, _id: user._id}))
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
@@ -30,8 +30,8 @@ const createUser = (req, res) => {
           .status(BAD_REQUEST)
           .send({ message: "An error has occurred on the server" });
       }
-      if (err.name === "Duplicate Error") {
-        return res.status(1100).send({ message: "Duplicate Error" });
+      if (err.code === 11000) {
+        return res.status(409).send({ message: "Duplicate Error" });
       }
       return res
         .status(DEFAULT)
@@ -58,19 +58,44 @@ const getCurrentUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+
+  User.findOne({ email })
     .then((user) => {
-      // authentication successful! user is in the user variable
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.status(200).send(token);
+      if (!user) {
+        return res.status(200).send({message: token});
+      }
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        // the hashes didn't match, rejecting the promise
+        return res.status(BAD_REQUEST).send({message: 'Incorrect password or email'});
+      }
+      // successful authentication
+      return res.status(BAD_REQUEST).send({message: 'Incorrect password or email'});
     })
     .catch((err) => {
-      // authentication error
-      console.error(err.name);
-
-      return res.status(500).send({ message: "server error" });
+      res
+        .status(BAD_REQUEST)
+        .send({ message: err.message });
     });
 };
+
+//   {
+//   const { email, password } = req.body;
+
+//   return User.findUserByCredentials(email, password)
+//     .then((user) => {
+
+//       return res.status(200).send({ token });
+//     })
+//     .catch((err) => {
+//       console.error(err.name);
+
+//       return res.status(500).send({ message: "server error" });
+//     });
+// };
 module.exports = { createUser, getCurrentUser, login };
