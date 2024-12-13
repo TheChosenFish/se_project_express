@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
+const cors = require("cors");
 const {login, createUser} = require("./controllers/users")
 
 const indexRouter = require("./routes/index");
@@ -25,7 +26,7 @@ app.use(express.json());
 //   next();
 // });
 
-const cors = require("cors");
+
 
 app.use(cors());
 
