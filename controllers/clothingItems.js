@@ -1,5 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const { NOT_FOUND, BAD_REQUEST, DEFAULT, FORBIDDEN_ERROR } = require("../utils/errors");
+const {
+  NOT_FOUND,
+  BAD_REQUEST,
+  DEFAULT,
+  FORBIDDEN_ERROR,
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req);
@@ -43,7 +48,6 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  //we need to check if the currently logged in user owns this item and is allowed to delete it
   ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
@@ -62,9 +66,11 @@ const deleteItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "item request failed" });
       }
-      //if block for the forbidden error
-      if (err.name === "ForbiddenError"){
-        return res.status(FORBIDDEN_ERROR).send({ message: "forbidden action" });
+
+      if (err.name === "ForbiddenError") {
+        return res
+          .status(FORBIDDEN_ERROR)
+          .send({ message: "forbidden action" });
       }
       return res.status(DEFAULT).send({ message: "item request error" });
     });

@@ -25,12 +25,14 @@ app.use(express.json());
 //   next();
 // });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
-
 const cors = require("cors");
 
 app.use(cors());
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+
 
 app.use("/", indexRouter);
 
