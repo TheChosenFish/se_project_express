@@ -74,7 +74,7 @@ const getCurrentUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials({ email })
+  User.findUserByCredentials({ email, password })
     .select("+password")
     .then((user) => {
       if (!user) {
@@ -96,6 +96,11 @@ const login = (req, res) => {
       return res.status(200).send({ message: token });
     })
     .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Incorrect password or email" });
+     }
       res.status(DEFAULT).send({ message: err.message });
     });
 };
