@@ -28,7 +28,7 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((error) => {
-      res.status(DEFAULT).send({ error });
+      res.status(DEFAULT).send({message: "Error from  getItem" });
     });
 };
 
@@ -56,7 +56,7 @@ const deleteItem = (req, res) => {
     })
     .then((items) => res.status(200).send({ items }))
     .catch((err) => {
-      if (err.code === "DocumentNotFoundError") {
+      if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "item not found" });
       }
       if (err.name === "CastError") {
