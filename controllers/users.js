@@ -16,11 +16,12 @@ const createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) =>
-      res.status(201).send({
+      res.status(200).send({
         name: user.name,
         avatar: user.avatar,
         email: user.email,
         _id: user._id,
+
       })
     )
     .catch((err) => {
@@ -58,13 +59,15 @@ const getCurrentUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      console.error(err);
+      if (err.name === 'ValidationError' ) {
+        return res.status(NOT_FOUND).send({ message: "User not found" })
+  }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User was not found" });
+        return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       return res.status(DEFAULT).send({ err: err.message });
     });
@@ -72,6 +75,7 @@ const updateUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+ 
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -81,11 +85,12 @@ const login = (req, res) => {
       return res.status(200).send({ token });
     })
     .catch((err) => {
-      if (err.message === "Incorrect email or password") {
+      if (err.message === "Incorrect email or password" || err.name ==="CastError") {
         return res
-          .status(UNAUTHORIZED)
+          .status(BAD_REQUEST)
           .send({ message: "Incorrect password or email" });
       }
+
       return res.status(DEFAULT).send({ message: err.message });
     });
 };
