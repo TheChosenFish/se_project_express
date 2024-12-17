@@ -6,7 +6,6 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   DUPLICATE,
-  UNAUTHORIZED,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
@@ -75,7 +74,7 @@ const updateUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
- 
+
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
