@@ -63,10 +63,10 @@ const updateUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' ) {
-        return res.status(NOT_FOUND).send({ message: "User not found" })
+        return res.status(BAD_REQUEST).send({ message: "User not found" })
   }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(BAD_REQUEST).send({ message: "Bad request" });
+        return res.status(NOT_FOUND).send({ message: "Bad request" });
       }
       return res.status(DEFAULT).send({ err: err.message });
     });
