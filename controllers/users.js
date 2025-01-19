@@ -77,11 +77,11 @@ const login = (req, res) => {
 
 
   return User.findUserByCredentials(email, password)
-    .then((user) => {
+    .then((user) => { // {name: 'bob', email: testdsfd, avatar: http:sd, password: 1sdfj, _id: 1212k234j}
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.status(200).send({ token });
+      return res.status(200).send({ token, user: {name: user.name, email: user.email, avatar: user.avatar, _id: user._id} });
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password" || err.name ==="CastError") {
