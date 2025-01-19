@@ -20,7 +20,6 @@ const createUser = (req, res) => {
         avatar: user.avatar,
         email: user.email,
         _id: user._id,
-
       })
     )
     .catch((err) => {
@@ -58,13 +57,17 @@ const getCurrentUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError' ) {
-        return res.status(BAD_REQUEST).send({ message: "User not found" })
-  }
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST).send({ message: "User not found" });
+      }
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "Bad request" });
       }
@@ -75,16 +78,27 @@ const updateUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-
   return User.findUserByCredentials(email, password)
-    .then((user) => { // {name: 'bob', email: testdsfd, avatar: http:sd, password: 1sdfj, _id: 1212k234j}
+    .then((user) => {
+      // {name: 'bob', email: testdsfd, avatar: http:sd, password: 1sdfj, _id: 1212k234j}
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      return res.status(200).send({ token, user: {name: user.name, email: user.email, avatar: user.avatar, _id: user._id} });
+      return res.status(200).send({
+        token,
+        user: {
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          _id: user._id,
+        },
+      });
     })
     .catch((err) => {
-      if (err.message === "Incorrect email or password" || err.name ==="CastError") {
+      if (
+        err.message === "Incorrect email or password" ||
+        err.name === "CastError"
+      ) {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Incorrect password or email" });

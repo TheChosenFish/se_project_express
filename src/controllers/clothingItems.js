@@ -31,7 +31,7 @@ const getItems = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "item not found" });
       }
-     return res.status(DEFAULT).send({message: "Error from  getItem" });
+      return res.status(DEFAULT).send({ message: "Error from  getItem" });
     });
 };
 
