@@ -11,7 +11,7 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      res.status(200).send({ data: item });
+      res.status(200).send(item);
     })
     .catch((error) => {
       if (error.name === "ValidationError") {
@@ -75,7 +75,7 @@ const deleteItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res) => { //http://localhost:3001/items/12d124d121212/likes
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
