@@ -47,6 +47,7 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  console.log(itemId);
   ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
@@ -75,7 +76,8 @@ const deleteItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => { //http://localhost:3001/items/12d124d121212/likes
+const likeItem = (req, res) => {
+  //http://localhost:3001/items/12d124d121212/likes
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },

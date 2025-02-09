@@ -8,6 +8,7 @@ const {
   DUPLICATE,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
+const BadRequestError = require("../errors/BadREquestError");
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -24,10 +25,9 @@ const createUser = (req, res) => {
     )
     .catch((err) => {
       console.error(err);
+
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "An error has occurred on the server" });
+        next(new BadRequestError("Validation error"));
       }
       if (err.code === 11000) {
         return res.status(DUPLICATE).send({ message: "Duplicate Error" });
