@@ -8,7 +8,7 @@ const {
   DUPLICATE,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
-const BadRequestError = require("../errors/BadREquestError");
+const BadRequestError = require("../errors/BadRequestError");
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
