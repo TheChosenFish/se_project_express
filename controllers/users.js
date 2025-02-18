@@ -10,7 +10,7 @@ const {
 const { JWT_SECRET } = require("../utils/config");
 const BadRequestError = require("../errors/BadRequestError");
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -27,7 +27,7 @@ const createUser = (req, res) => {
       console.error(err);
 
       if (err.name === "ValidationError") {
-        next(new BadRequestError("Validation error"));
+        return next(new BadRequestError("Validation error"));
       }
       if (err.code === 11000) {
         return res.status(DUPLICATE).send({ message: "Duplicate Error" });
