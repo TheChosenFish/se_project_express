@@ -3,11 +3,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const { celebrate, Joi } = require("celebrate");
+const { errors } = require("celebrate");
 const { login, createUser } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
-const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { celebrate, Joi } = require("celebrate");
 
 const indexRouter = require("./routes/index");
 

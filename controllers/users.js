@@ -1,11 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { DEFAULT } = require("../utils/errors");
+
 const { JWT_SECRET } = require("../utils/config");
 const BadRequestError = require("../errors/BadRequestError");
-const NotFoundError = require("../errors/BadRequestError");
-const DuplicateError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const DuplicateError = require("../errors/DuplicateError");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
@@ -29,13 +29,11 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new DuplicateError("Duplicate Error"));
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .orFail()
@@ -48,11 +46,11 @@ const getCurrentUser = (req, res) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Validation error"));
       }
-      return res.status(DEFAULT).send({ err: err.message });
+      return next(err);
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -68,11 +66,11 @@ const updateUser = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("User was not found"));
       }
-      return res.status(DEFAULT).send({ err: err.message });
+      return next(err);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -99,7 +97,7 @@ const login = (req, res) => {
         return next(new BadRequestError("Validation error"));
       }
 
-      return res.status(DEFAULT).send({ message: err.message });
+      return next(err);
     });
 };
 

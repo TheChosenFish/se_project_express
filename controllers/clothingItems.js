@@ -1,10 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const { DEFAULT } = require("../utils/errors");
-const BadRequestError = require("../errors/BadRequestError");
-const NotFoundError = require("../errors/BadRequestError");
-const ForbiddenError = require("../errors/BadRequestError");
 
-const createItem = (req, res) => {
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenError = require("../errors/ForbiddenError");
+
+const createItem = (req, res, next, err) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -15,11 +15,11 @@ const createItem = (req, res) => {
       if (error.name === "ValidationError") {
         return next(new BadRequestError("Validation error"));
       }
-      return res.status(DEFAULT).send({ message: "Error from  createItem" });
+      return next(err);
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   const { itemId } = req.params;
 
   console.log(itemId);
@@ -29,7 +29,7 @@ const getItems = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("item not found"));
       }
-      return res.status(DEFAULT).send({ message: "Error from  getItem" });
+      return next(err);
     });
 };
 
@@ -43,7 +43,7 @@ const getItems = (req, res) => {
 //   });
 // };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   console.log(itemId);
   ClothingItem.findById(itemId)
@@ -68,12 +68,12 @@ const deleteItem = (req, res) => {
       if (err.name === "ForbiddenError") {
         return next(new ForbiddenError("Forbidden action"));
       }
-      return res.status(DEFAULT).send({ message: "item request error" });
+      return next(err);
     });
 };
 
-const likeItem = (req, res) => {
-  //http://localhost:3001/items/12d124d121212/likes
+const likeItem = (req, res, next) => {
+  // http://localhost:3001/items/12d124d121212/likes
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -88,11 +88,11 @@ const likeItem = (req, res) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Validation error"));
       }
-      return res.status(DEFAULT).send({ message: "Get items failed" });
+      return next(err);
     });
 };
 
-const deleteLike = (req, res) => {
+const deleteLike = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -107,7 +107,7 @@ const deleteLike = (req, res) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Validation error"));
       }
-      return res.status(DEFAULT).send({ message: "Get items failed" });
+      return next(err);
     });
 };
 

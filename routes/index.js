@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { NOT_FOUND } = require("../utils/errors");
+
 const clothingItem = require("./clothingItems");
 const auth = require("../middlewares/auth");
 const NotFoundError = require("../errors/BadRequestError");
@@ -13,7 +13,7 @@ router.use("/items", clothingItem);
 router.use("/", auth);
 router.use("/users", userRouter);
 
-router.use((req, res) => {
+router.use((next) => {
   return next(new NotFoundError("item not found"));
 });
 

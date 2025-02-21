@@ -1,6 +1,3 @@
-import validator from "validator";
-import { celebrate, Joi } from "celebrate";
-
 const { Joi, celebrate } = require("celebrate");
 const validator = require("validator");
 
@@ -51,4 +48,5 @@ module.exports = {
   clothingItemValidation,
   userLoginValidation,
   newUserValidation,
+  validateURL,
 };

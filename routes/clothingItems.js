@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth");
 const { celebrate, Joi } = require("celebrate");
+const auth = require("../middlewares/auth");
 
 const {
   createItem,
@@ -20,8 +20,8 @@ router.post(
   "/",
   celebrate({
     body: Joi.object().keys({
-      name: Joi.string().required(),
-      weather: Joi.string().required(),
+      name: Joi.string().min(2).max(30).required(),
+      weather: Joi.string().valid("hot", "warm", "cold").required(),
       imageUrl: Joi.string().required().uri(),
     }),
   }),
@@ -31,7 +31,7 @@ router.post(
 router.delete(
   "/:itemId",
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       itemId: Joi.string().required(),
     }),
   }),
@@ -41,7 +41,7 @@ router.delete(
 router.put(
   "/:itemId/likes",
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       itemId: Joi.string().required(),
     }),
   }),
@@ -51,7 +51,7 @@ router.put(
 router.delete(
   "/:itemId/likes",
   celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       itemId: Joi.string().required(),
     }),
   }),
