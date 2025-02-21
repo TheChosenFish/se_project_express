@@ -7,6 +7,7 @@ const { login, createUser } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const { celebrate, Joi } = require("celebrate");
 
 const indexRouter = require("./routes/index");
 
@@ -38,8 +39,28 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login
+);
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      avatar: Joi.string().required().uri(),
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
+  createUser
+);
 
 app.use("/", indexRouter);
 

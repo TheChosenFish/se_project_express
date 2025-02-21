@@ -1,14 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const {
-  DEFAULT,
-  BAD_REQUEST,
-  NOT_FOUND,
-  DUPLICATE,
-} = require("../utils/errors");
+const { DEFAULT } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/BadRequestError");
+const DuplicateError = require("../errors/BadRequestError");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
@@ -30,7 +27,7 @@ const createUser = (req, res, next) => {
         return next(new BadRequestError("Validation error"));
       }
       if (err.code === 11000) {
-        return res.status(DUPLICATE).send({ message: "Duplicate Error" });
+        return next(new DuplicateError("Duplicate Error"));
       }
       return res
         .status(DEFAULT)
@@ -46,10 +43,10 @@ const getCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User was not found" });
+        return next(new NotFoundError("User was not found"));
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid ID" });
+        return next(new BadRequestError("Validation error"));
       }
       return res.status(DEFAULT).send({ err: err.message });
     });
@@ -66,10 +63,10 @@ const updateUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "User not found" });
+        return next(new BadRequestError("Validation error"));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "Bad request" });
+        return next(new NotFoundError("User was not found"));
       }
       return res.status(DEFAULT).send({ err: err.message });
     });
@@ -99,9 +96,7 @@ const login = (req, res) => {
         err.message === "Incorrect email or password" ||
         err.name === "CastError"
       ) {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Incorrect password or email" });
+        return next(new BadRequestError("Validation error"));
       }
 
       return res.status(DEFAULT).send({ message: err.message });

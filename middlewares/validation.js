@@ -35,7 +35,9 @@ function userLoginValidation() {
 }
 
 function clothingItemIdValidation() {
-  Joi.object().keys({});
+  Joi.object().keys({
+    itemId: Joi.string().required(),
+  });
 }
 
 module.exports.validateId = celebrate({
