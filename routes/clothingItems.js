@@ -32,7 +32,7 @@ router.delete(
   "/:itemId",
   celebrate({
     params: Joi.object().keys({
-      itemId: Joi.string().required(),
+      itemId: Joi.string().length(24).hex().required(),
     }),
   }),
   deleteItem
@@ -42,7 +42,7 @@ router.put(
   "/:itemId/likes",
   celebrate({
     params: Joi.object().keys({
-      itemId: Joi.string().required(),
+      itemId: Joi.string().length(24).hex().required(),
     }),
   }),
   likeItem
@@ -52,7 +52,7 @@ router.delete(
   "/:itemId/likes",
   celebrate({
     params: Joi.object().keys({
-      itemId: Joi.string().required(),
+      itemId: Joi.string().length(24).hex().required(),
     }),
   }),
   deleteLike

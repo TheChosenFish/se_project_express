@@ -6,6 +6,7 @@ const { JWT_SECRET } = require("../utils/config");
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const DuplicateError = require("../errors/DuplicateError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
@@ -94,7 +95,7 @@ const login = (req, res, next) => {
         err.message === "Incorrect email or password" ||
         err.name === "CastError"
       ) {
-        return next(new BadRequestError("Validation error"));
+        return next(new UnauthorizedError("Unauthorized"));
       }
 
       return next(err);
