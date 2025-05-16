@@ -19,16 +19,7 @@ mongoose
   .then(() => {})
   .catch(console.error);
 
-// const routes = require("./routes");
-
 app.use(express.json());
-
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: "6749186e162c5ed914a7ac07",
-//   };
-//   next();
-// });
 
 app.use(cors());
 app.use(requestLogger);
