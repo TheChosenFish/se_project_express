@@ -10,24 +10,21 @@ const {
   deleteItem,
 } = require("../controllers/clothingItems");
 
-// routes start with /items
+router.get("/", getItems);
+router.use(auth);
 
-// read
-router.get("/", getItems); // get request to /items/
-router.use("/", auth);
-// create
 router.post(
   "/",
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30).required(),
       weather: Joi.string().valid("hot", "warm", "cold").required(),
-      imageUrl: Joi.string().required().uri(),
+      imageUrl: Joi.string().uri().required(),
     }),
   }),
   createItem
 );
-// delete
+
 router.delete(
   "/:itemId",
   celebrate({
@@ -37,7 +34,7 @@ router.delete(
   }),
   deleteItem
 );
-// like
+
 router.put(
   "/:itemId/likes",
   celebrate({
@@ -46,8 +43,8 @@ router.put(
     }),
   }),
   likeItem
-); // /items/itemId/likes
-// dislike
+);
+
 router.delete(
   "/:itemId/likes",
   celebrate({

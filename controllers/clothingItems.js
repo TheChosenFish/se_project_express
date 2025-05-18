@@ -4,7 +4,7 @@ const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 const ForbiddenError = require("../errors/ForbiddenError");
 
-const createItem = (req, res, next, err) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -24,7 +24,7 @@ const getItems = (req, res, next) => {
 
   console.log(itemId);
   ClothingItem.find({})
-    .then((items) => res.status(200).send(items))
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("item not found"));
@@ -32,16 +32,6 @@ const getItems = (req, res, next) => {
       return next(err);
     });
 };
-
-// const updateItem = (req, res) => {
-//   const {itemId} = req.params;
-//   const {imageURL} = req.body;
-
-//   ClothingItem.findByIdAndUpdate(itemId, {$set:{imageURL}}).orFail().then((item) => res.status(200).send())
-//   .catch((e) => {
-//     res.status(500).send({ message: "Update item error", e });
-//   });
-// };
 
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
@@ -56,7 +46,7 @@ const deleteItem = (req, res, next) => {
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
-    .then((items) => res.status(200).send({ items }))
+    .then((item) => res.status(200).send({ item }))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("item not found"));
